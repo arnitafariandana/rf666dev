@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <title>Game Tebak-Tebakan</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      background: #f0f0f0;
+    }
+    .game-container {
+      background: #fff;
+      width: 95%;
+      max-width: 400px;
+      padding: 20px;
+      border-radius: 15px;
+      box-shadow: 0 4px 8px rgba(0,0,0,.2);
+      text-align: center;
+    }
+    h1, h2 {
+      font-size: 18px;
+      margin-bottom: 15px;
+    }
+    .question {
+      margin: 20px 0;
+      font-weight: bold;
+    }
+    .options button {
+      display: block;
+      width: 100%;
+      margin: 5px 0;
+      padding: 10px;
+      border: none;
+      border-radius: 8px;
+      background: #007bff;
+      color: white;
+      font-size: 16px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .options button:hover {
+      background: #0056b3;
+    }
+    .status {
+      margin-top: 15px;
+      font-size: 14px;
+      color: #555;
+    }
+    .hidden {
+      display: none;
+    }
+    .scoreboard {
+      font-size: 14px;
+      margin-bottom: 10px;
+      color: #333;
+    }
+    .reset-btn {
+      margin-top: 15px;
+      padding: 10px 20px;
+      font-size: 14px;
+      border: none;
+      border-radius: 8px;
+      background: #28a745;
+      color: white;
+      cursor: pointer;
+    }
+    .reset-btn:hover {
+      background: #1e7e34;
+    }
+  </style>
+</head>
+<body>
+  <div class="game-container" id="game">
+    <h1>Game Tebak-Tebakan</h1>
+    <div class="scoreboard">
+      Level: <span id="level-display">1</span> / 5 <br>
+      Skor: <span id="score-display">0</span>
+    </div>
+    <h2 id="level-title">Level 1</h2>
+    <div id="question-container">
+      <div class="question" id="question-text">Pertanyaan akan muncul di sini</div>
+      <div class="options" id="options"></div>
+    </div>
+    <div class="status" id="status"></div>
+  </div>
+
+  <script>
+    const questions = [
+      // Level 1
+      [
+        {q:"Ibu kota Indonesia?", a:["Jakarta","Bandung","Medan"], c:0},
+        {q:"2 + 2 = ?", a:["3","4","5"], c:1},
+        {q:"Hewan yang bisa terbang?", a:["Ikan","Burung","Kucing"], c:1},
+        {q:"Warna bendera Indonesia?", a:["Merah Putih","Biru Kuning","Hijau Hitam"], c:0},
+        {q:"Lawan kata besar?", a:["Kecil","Panjang","Lebar"], c:0},
+        {q:"Hari setelah Senin?", a:["Selasa","Rabu","Minggu"], c:0},
+        {q:"Planet terdekat dari Matahari?", a:["Merkurius","Bumi","Mars"], c:0},
+        {q:"Binatang berkaki 8?", a:["Kucing","Laba-laba","Ayam"], c:1},
+        {q:"Bahasa resmi Indonesia?", a:["Jawa","Sunda","Indonesia"], c:2},
+        {q:"Lambang negara Indonesia?", a:["Garuda","Elang","Merpati"], c:0}
+      ],
+      // Level 2
+      [
+        {q:"5 x 5 = ?", a:["20","25","30"], c:1},
+        {q:"Laut terluas di dunia?", a:["Hindia","Pasifik","Atlantik"], c:1},
+        {q:"Hewan pemakan daging?", a:["Herbivora","Karnivora","Omnivora"], c:1},
+        {q:"Presiden pertama Indonesia?", a:["Sukarno","Suharto","Jokowi"], c:0},
+        {q:"7 - 3 = ?", a:["5","4","3"], c:1},
+        {q:"Ibu kota Jepang?", a:["Tokyo","Seoul","Beijing"], c:0},
+        {q:"Bentuk bumi?", a:["Datar","Bulat","Segitiga"], c:1},
+        {q:"Binatang laut besar?", a:["Paus","Kuda","Harimau"], c:0},
+        {q:"Negara tetangga Indonesia?", a:["Malaysia","Kanada","Brazil"], c:0},
+        {q:"Gunung tertinggi di dunia?", a:["Kilimanjaro","Everest","Merapi"], c:1}
+      ],
+      // Level 3
+      [
+        {q:"3 x 7 = ?", a:["21","24","27"], c:0},
+        {q:"Mata uang Indonesia?", a:["Ringgit","Dollar","Rupiah"], c:2},
+        {q:"Bahasa resmi Jepang?", a:["Korea","Jepang","Cina"], c:1},
+        {q:"Ibukota Inggris?", a:["Paris","London","Berlin"], c:1},
+        {q:"Hewan yang bertelur?", a:["Ayam","Kambing","Sapi"], c:0},
+        {q:"Negara dengan Menara Eiffel?", a:["Prancis","Italia","Belgia"], c:0},
+        {q:"Ibukota Mesir?", a:["Kairo","Doha","Dubai"], c:0},
+        {q:"Nama samudra di selatan Indonesia?", a:["Hindia","Atlantik","Pasifik"], c:0},
+        {q:"Binatang dengan belalai?", a:["Gajah","Kuda","Singa"], c:0},
+        {q:"Simbol H di tabel periodik?", a:["Hidrogen","Helium","Hafnium"], c:0}
+      ],
+      // Level 4
+      [
+        {q:"20 ÷ 5 = ?", a:["3","4","5"], c:1},
+        {q:"Gunung tertinggi di Indonesia?", a:["Semeru","Jayawijaya","Merapi"], c:1},
+        {q:"Pulau terbesar di Indonesia?", a:["Sumatra","Papua","Kalimantan"], c:2},
+        {q:"Hewan tercepat?", a:["Cheetah","Kuda","Elang"], c:0},
+        {q:"Ibukota Australia?", a:["Sydney","Melbourne","Canberra"], c:2},
+        {q:"Sungai terpanjang di dunia?", a:["Amazon","Nil","Mississippi"], c:1},
+        {q:"Bendera Jepang warna apa?", a:["Putih & Merah","Putih & Hitam","Putih & Biru"], c:0},
+        {q:"Planet merah?", a:["Venus","Mars","Saturnus"], c:1},
+        {q:"Air membeku di suhu?", a:["0°C","32°C","100°C"], c:0},
+        {q:"Hewan menyusui disebut?", a:["Mamalia","Reptil","Amfibi"], c:0}
+      ],
+      // Level 5
+      [
+        {q:"10 x 10 = ?", a:["100","1000","10"], c:0},
+        {q:"Penemu lampu pijar?", a:["Newton","Edison","Einstein"], c:1},
+        {q:"Negara piramida?", a:["Mesir","India","China"], c:0},
+        {q:"Planet terbesar?", a:["Bumi","Jupiter","Saturnus"], c:1},
+        {q:"Ibukota Thailand?", a:["Bangkok","Hanoi","Phnom Penh"], c:0},
+        {q:"Satelit alami bumi?", a:["Bulan","Mars","Venus"], c:0},
+        {q:"Negara dengan Taj Mahal?", a:["India","Pakistan","Nepal"], c:0},
+        {q:"Ibukota Korea Selatan?", a:["Seoul","Tokyo","Beijing"], c:0},
+        {q:"Laut mati ada di?", a:["Yordania","Brasil","Kanada"], c:0},
+        {q:"Benua terbesar?", a:["Asia","Afrika","Eropa"], c:0}
+      ]
+    ];
+
+    let level = 0;
+    let qIndex = 0;
+    let score = 0;
+
+    function showQuestion() {
+      if (level >= questions.length) {
+        endGame();
+        return;
+      }
+
+      document.getElementById("level-title").innerText = "Level " + (level+1);
+      document.getElementById("level-display").innerText = level + 1;
+      document.getElementById("score-display").innerText = score;
+
+      let q = questions[level][qIndex];
+      document.getElementById("question-text").innerText = q.q;
+
+      let optionsDiv = document.getElementById("options");
+      optionsDiv.innerHTML = "";
+      q.a.forEach((opt,i) => {
+        let btn = document.createElement("button");
+        btn.innerText = opt;
+        btn.onclick = () => checkAnswer(i);
+        optionsDiv.appendChild(btn);
+      });
+
+      document.getElementById("status").innerText = `Pertanyaan ${qIndex+1} dari 10`;
+    }
+
+    function checkAnswer(choice) {
+      let q = questions[level][qIndex];
+      if (choice === q.c) {
+        score++;
+      }
+      qIndex++;
+      if (qIndex >= 10) {
+        level++;
+        qIndex = 0;
+      }
+      showQuestion();
+    }
+
+    function endGame() {
+      const container = document.getElementById("game");
+      container.innerHTML = `
+        <h1>🎉 Game Selesai! 🎉</h1>
+        <p>Skor Akhir Anda: <strong>${score} / 50</strong></p>
+        <button class="reset-btn" onclick="resetGame()">Main Lagi</button>
+      `;
+    }
+
+    function resetGame() {
+      level = 0;
+      qIndex = 0;
+      score = 0;
+      document.getElementById("game").innerHTML = `
+        <h1>Game Tebak-Tebakan</h1>
+        <div class="scoreboard">
+          Level: <span id="level-display">1</span> / 5 <br>
+          Skor: <span id="score-display">0</span>
+        </div>
+        <h2 id="level-title">Level 1</h2>
+        <div id="question-container">
+          <div class="question" id="question-text">Pertanyaan akan muncul di sini</div>
+          <div class="options" id="options"></div>
+        </div>
+        <div class="status" id="status"></div>
+      `;
+      showQuestion();
+    }
+
+    // mulai game
+    showQuestion();
+  </script>
+</body>
+</html>
