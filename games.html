@@ -3,192 +3,245 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Koboi — Game Tebak-Tebakan</title>
+  <title>Koboi — Game Tebak-Tebakan (Full)</title>
   <style>
-    /* ---------- Background animated (pola + partikel) ---------- */
     :root{
-      --card: rgba(255,255,255,0.95);
-      --accent: #c96a3a;
-      --accent-dark:#a14f2a;
+      --bg1:#051622;
+      --bg2:#08324a;
+      --card-bg: rgba(255,255,255,0.03);
+      --accent:#ff8a4b;
+      --accent2:#ff6b35;
+      --text:#f4f9fb;
+      --muted:rgba(244,249,251,0.7);
+      --btn-radius:12px;
     }
-    html,body{height:100%;margin:0;font-family:Inter, system-ui, Arial, sans-serif;-webkit-font-smoothing:antialiased}
+    html,body{height:100%;margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Inter,Arial;}
     body{
-      background:
-        radial-gradient(ellipse at 10% 10%, rgba(255,255,255,0.06), transparent 10%),
-        radial-gradient(ellipse at 90% 90%, rgba(255,255,255,0.04), transparent 10%),
-        linear-gradient(135deg,#0f1724 0%, #102938 50%, #0b1b2a 100%);
-      overflow:auto;
-      color:#0b1220;
+      min-height:100vh;
+      color:var(--text);
+      background: radial-gradient(800px 400px at 10% 10%, rgba(255,200,150,0.06), transparent 6%),
+                  radial-gradient(600px 300px at 90% 90%, rgba(150,200,255,0.04), transparent 6%),
+                  linear-gradient(180deg,var(--bg1),var(--bg2));
+      overflow:hidden;
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
+      padding:0;
       display:flex;
-      align-items:center;
-      justify-content:center;
-      padding:28px 16px;
+      flex-direction:column;
     }
 
-    /* moving stripes layer */
-    .bg-stripes{
-      position:fixed;inset:0;pointer-events:none;mix-blend-mode:overlay;opacity:0.06;background-image:
-      linear-gradient(135deg, rgba(255,255,255,0.06) 10%, transparent 10%, transparent 50%, rgba(255,255,255,0.06) 50%, rgba(255,255,255,0.06) 60%, transparent 60%);
-      background-size: 40px 40px;
-      animation: stripeShift 20s linear infinite;
+    /* animated stripes/pattern */
+    .stripes{
+      position:fixed;inset:0;pointer-events:none;mix-blend-mode:overlay;opacity:0.06;
+      background-image:
+        linear-gradient(135deg, rgba(255,255,255,0.05) 12%, transparent 12%, transparent 50%, rgba(255,255,255,0.05) 50%, rgba(255,255,255,0.05) 62%, transparent 62%);
+      background-size:40px 40px;
+      animation:shift 20s linear infinite;
       z-index:0;
     }
-    @keyframes stripeShift{from{background-position:0 0}to{background-position:800px 800px}}
+    @keyframes shift{from{background-position:0 0}to{background-position:800px 800px}}
 
     /* floating orbs */
-    .orb {position:fixed;border-radius:50%;filter:blur(30px);opacity:0.08;mix-blend-mode:screen}
-    .orb.one{width:420px;height:420px;left:-80px;top:-60px;background:#ff6b35;animation:float1 12s ease-in-out infinite}
-    .orb.two{width:300px;height:300px;right:-100px;bottom:-40px;background:#3aa6ff;animation:float2 14s ease-in-out infinite}
-    @keyframes float1{0%{transform:translateY(0)}50%{transform:translateY(24px)}100%{transform:translateY(0)}}
-    @keyframes float2{0%{transform:translateY(0)}50%{transform:translateY(-20px)}100%{transform:translateY(0)}}
+    .orb{position:fixed;border-radius:50%;filter:blur(40px);opacity:0.08;mix-blend-mode:screen;z-index:0;}
+    .orb.one{width:500px;height:500px;left:-120px;top:-140px;background:#ff7a3d;animation:floatA 14s ease-in-out infinite}
+    .orb.two{width:360px;height:360px;right:-100px;bottom:-120px;background:#3aa6ff;animation:floatB 16s ease-in-out infinite}
+    @keyframes floatA{0%{transform:translateY(0)}50%{transform:translateY(24px)}100%{transform:translateY(0)}}
+    @keyframes floatB{0%{transform:translateY(0)}50%{transform:translateY(-28px)}100%{transform:translateY(0)}}
 
-    /* ---------- Card / Game UI ---------- */
-    .card{
+    /* app container fills screen */
+    .app{
       position:relative;
-      width:100%;
-      max-width:520px;
       z-index:1;
-      background:var(--card);
-      border-radius:14px;
-      box-shadow: 0 10px 40px rgba(2,6,23,0.45);
-      padding:18px;
-      overflow:hidden;
-    }
-    header{
       display:flex;
-      justify-content:space-between;
+      flex-direction:column;
+      height:100vh;
+      width:100vw;
+      box-sizing:border-box;
+      padding:14px;
+      gap:10px;
+    }
+
+    /* header */
+    header.app-header{
+      display:flex;
       align-items:center;
+      justify-content:space-between;
       gap:12px;
-      margin-bottom:6px;
+      padding:6px 6px;
     }
     .brand{
-      display:flex;gap:12px;align-items:center;
+      display:flex;align-items:center;gap:10px;
     }
     .logo{
-      width:48px;height:48px;border-radius:10px;background:linear-gradient(135deg,var(--accent),var(--accent-dark));display:flex;align-items:center;justify-content:center;color:white;font-weight:700;box-shadow:0 6px 18px rgba(193,106,58,0.25)
+      width:44px;height:44px;border-radius:10px;background:linear-gradient(135deg,var(--accent),var(--accent2));display:flex;align-items:center;justify-content:center;font-weight:800;color:white;font-size:20px;box-shadow:0 6px 18px rgba(0,0,0,0.25);
     }
-    .brand h1{font-size:18px;margin:0}
+    .brand .title{font-size:16px;font-weight:700;line-height:1}
+    .brand .sub{font-size:12px;color:var(--muted)}
+
     .controls{display:flex;gap:8px;align-items:center}
     button.btn{
-      background:var(--accent);color:#fff;border:none;padding:8px 12px;border-radius:10px;font-weight:600;cursor:pointer;
-      box-shadow: 0 6px 14px rgba(161,79,42,0.18);
+      background:linear-gradient(90deg,var(--accent),var(--accent2));
+      color:white;border:none;padding:10px 14px;border-radius:var(--btn-radius);font-weight:700;font-size:14px;touch-action:manipulation;
+      box-shadow:0 8px 20px rgba(167,86,44,0.14);
     }
-    button.ghost{background:transparent;border:1px solid rgba(11,18,32,0.06);color:#0b1220;padding:6px 10px}
-
-    /* stats */
-    .stats{display:flex;gap:12px;flex-wrap:wrap;margin:10px 0 18px}
-    .stat{flex:1;min-width:110px;background:linear-gradient(180deg,rgba(2,6,23,0.02),rgba(2,6,23,0.01));padding:10px;border-radius:10px;text-align:center}
-    .stat b{display:block;font-size:18px}
-
-    /* question card */
-    .question-box{background:linear-gradient(180deg,#ffffff,#fffefc);border-radius:12px;padding:16px;border:1px solid rgba(11,18,32,0.04)}
-    .qtext{font-size:18px;font-weight:700;margin-bottom:12px;color:#102233}
-    .options{display:grid;gap:10px}
-    .opt{background:#0b1220;color:white;padding:12px;border-radius:10px;border:none;text-align:left;cursor:pointer;font-weight:600;transition:transform .12s ease,opacity .12s}
-    .opt:hover{transform:translateY(-4px)}
-    .opt.correct{background:linear-gradient(90deg,#2ecc71,#27ae60)}
-    .opt.wrong{background:linear-gradient(90deg,#eb5757,#d14848)}
-    .muted{opacity:0.85;font-size:13px;color:#26343a;margin-top:10px}
-
-    /* footer */
-    .footer{display:flex;justify-content:space-between;align-items:center;margin-top:14px;gap:8px}
-    .progress-bar{
-      height:10px;background:linear-gradient(90deg,#e6eef6,#f8efe4);border-radius:999px;overflow:hidden;flex:1;margin-left:8px
+    button.ghost{
+      background:transparent;border:1px solid rgba(255,255,255,0.08);color:var(--text);padding:8px 12px;border-radius:12px;font-weight:600;
     }
-    .progress-inner{height:100%;width:0;background:linear-gradient(90deg,var(--accent),#f7a66f);transition:width .6s ease}
 
-    /* responsive tweaks */
+    /* main game area stretch */
+    .main{
+      flex:1;display:flex;flex-direction:column;gap:10px;align-items:stretch;justify-content:center;
+      padding:6px;
+    }
+
+    /* info bar (level, score) */
+    .info-row{
+      display:flex;justify-content:space-between;gap:10px;align-items:center;padding:8px;background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));border-radius:12px;border:1px solid rgba(255,255,255,0.03);
+      box-shadow: inset 0 -2px 0 rgba(255,255,255,0.01);
+    }
+    .info-left{display:flex;gap:12px;align-items:center}
+    .badge{background:rgba(255,255,255,0.04);padding:8px 10px;border-radius:10px;text-align:center;min-width:72px}
+    .badge b{display:block;font-size:18px}
+    .muted{color:var(--muted);font-size:12px}
+
+    /* question card big */
+    .qcard{
+      background:linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01));
+      border-radius:14px;padding:14px;box-shadow:0 10px 30px rgba(2,6,23,0.25);border:1px solid rgba(255,255,255,0.04);
+      display:flex;flex-direction:column;gap:12px;
+    }
+    .qtext{font-size:22px;font-weight:800;color:var(--text);line-height:1.15}
+    .options{display:grid;grid-template-columns:1fr;gap:10px}
+    .opt{
+      background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+      border-radius:12px;padding:14px;text-align:left;border:1px solid rgba(255,255,255,0.04);
+      color:var(--text);font-weight:700;font-size:16px;cursor:pointer;transition:transform .12s ease,opacity .12s;
+      touch-action:manipulation;
+    }
+    .opt:active{transform:translateY(2px)}
+    .opt.correct{background:linear-gradient(90deg,#39d98a,#2bbd6b);color:#04221a}
+    .opt.wrong{background:linear-gradient(90deg,#ff7a7a,#ff5050);color:#230303}
+    .opt[disabled]{opacity:0.85;cursor:not-allowed}
+
+    /* footer bottom controls */
+    .bottom{
+      display:flex;gap:8px;align-items:center;justify-content:space-between;padding:8px 0;
+    }
+    .progress-wrap{flex:1;margin-left:10px}
+    .progress{height:10px;background:linear-gradient(90deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));border-radius:999px;overflow:hidden;border:1px solid rgba(255,255,255,0.03)}
+    .progress-inner{height:100%;width:0;background:linear-gradient(90deg,var(--accent),#ffd8b8);transition:width .6s cubic-bezier(.2,.9,.3,1)}
+
+    /* finished overlay */
+    .overlay{
+      position:fixed;inset:0;z-index:5;display:flex;align-items:center;justify-content:center;background:linear-gradient(180deg,rgba(2,6,23,0.4),rgba(2,6,23,0.6));backdrop-filter: blur(4px);
+    }
+    .card-over{background:var(--card-bg);padding:18px;border-radius:14px;border:1px solid rgba(255,255,255,0.05);text-align:center;max-width:90%;}
+
+    /* responsive small */
     @media (max-width:420px){
-      .qtext{font-size:16px}
-      .opt{font-size:15px;padding:10px}
-      .brand h1{font-size:16px}
+      .qtext{font-size:20px}
+      .logo{width:40px;height:40px;font-size:18px}
+      .opt{font-size:15px;padding:12px}
+      .badge b{font-size:16px}
     }
   </style>
 </head>
 <body>
-  <div class="bg-stripes"></div>
+  <div class="stripes"></div>
   <div class="orb one"></div>
   <div class="orb two"></div>
 
-  <div class="card" aria-live="polite">
-    <header>
-      <div class="brand" role="banner">
+  <div class="app" role="application" aria-label="Koboi Game">
+    <header class="app-header">
+      <div class="brand">
         <div class="logo">K</div>
         <div>
-          <h1>Koboi</h1>
-          <div style="font-size:12px;color:#56626b">Game Tebak-Tebakan — 10 Level</div>
+          <div class="title">Koboi</div>
+          <div class="sub">Tebak-Tebakan • 10 Level</div>
         </div>
       </div>
-
       <div class="controls">
-        <button class="btn" id="btn-reset">Reset</button>
         <button class="ghost" id="btn-info">Info</button>
+        <button class="btn" id="btn-reset">Reset</button>
       </div>
     </header>
 
-    <div class="stats" aria-hidden="false">
-      <div class="stat">
-        <div style="font-size:12px;color:#55606a">Level</div>
-        <b id="ui-level">1</b>
-        <div class="muted" id="ui-sub">Pertanyaan 1 / 5</div>
+    <main class="main">
+      <div class="info-row" aria-hidden="false">
+        <div class="info-left">
+          <div class="badge"><div class="muted">Level</div><b id="ui-level">1</b></div>
+          <div class="badge"><div class="muted">Soal</div><b id="ui-qnum">1/5</b></div>
+        </div>
+        <div style="display:flex;align-items:center;gap:12px">
+          <div style="text-align:right">
+            <div class="muted">Skor</div>
+            <b id="ui-score">0</b>
+          </div>
+        </div>
       </div>
-      <div class="stat">
-        <div style="font-size:12px;color:#55606a">Skor</div>
-        <b id="ui-score">0</b>
-        <div class="muted">Total benar</div>
-      </div>
-      <div class="stat">
-        <div style="font-size:12px;color:#55606a">Progress</div>
-        <div class="progress-bar" aria-hidden="true"><div class="progress-inner" id="ui-progress" style="width:0"></div></div>
-      </div>
-    </div>
 
-    <section class="question-box" id="game-area">
-      <div class="qtext" id="qtext">Tekan "Mulai" untuk bermain — selamat datang, Koboi!</div>
-      <div class="options" id="options"></div>
-      <div class="muted" id="hint">Jawab dengan mengetuk salah satu pilihan.</div>
-    </section>
+      <section class="qcard" id="game-card">
+        <div class="qtext" id="qtext">Tekan "Mulai" untuk memulai petualangan Koboi!</div>
+        <div class="options" id="options"></div>
+        <div class="muted" id="hint">Jawab dengan mengetuk pilihan. Jawaban & urutan acak tiap reset level.</div>
+      </section>
 
-    <div class="footer">
-      <div style="display:flex;gap:8px;align-items:center">
-        <button class="btn" id="btn-start">Mulai</button>
-        <button class="ghost" id="btn-next" style="display:none">Lewati</button>
+      <div class="bottom">
+        <div style="display:flex;gap:8px">
+          <button class="btn" id="btn-start">Mulai</button>
+          <button class="ghost" id="btn-skip">Lewati</button>
+        </div>
+        <div class="progress-wrap" aria-hidden="true">
+          <div class="progress"><div class="progress-inner" id="ui-progress"></div></div>
+        </div>
       </div>
-      <div style="font-size:13px;color:#5b6a73">Koboi • Level tantangan</div>
+    </main>
+  </div>
+
+  <!-- overlay finish (hidden) -->
+  <div id="overlay" class="overlay" style="display:none" role="dialog" aria-modal="true">
+    <div class="card-over" id="over-card">
+      <h2 style="margin:0 0 8px">🎉 Selamat Koboi!</h2>
+      <div style="font-size:20px;font-weight:800" id="final-score">0 / 50</div>
+      <div class="muted" style="margin-top:8px">Skor akhir kamu</div>
+      <div style="margin-top:14px;display:flex;gap:8px;justify-content:center">
+        <button class="btn" id="over-replay">Main Lagi</button>
+        <button class="ghost" id="over-close">Tutup</button>
+      </div>
     </div>
   </div>
 
 <script>
-/* --------------------------
-   Data soal: 10 level × 5 soal
-   Format: {q: 'pertanyaan', opts: [...], a: index_of_correct}
-   ---------------------------*/
+/* -----------------------
+  Soal bank: 10 level x 5 soal
+  Format: BANK[levelIndex][qIndex] = { q: '...', opts:[...], a: index }
+------------------------*/
 const BANK = [
-  // Level 1
+  // L1
   [
-    {q:"Di mana biasanya koboi bekerja?", opts:["Padang rumput / ranch","Kota besar","Gedung perkantoran"], a:0},
-    {q:"Alat khas koboi untuk menunggang?", opts:["Kuda","Sepeda","Skuter"], a:0},
-    {q:"Topi koboi biasanya disebut?", opts:["Stetson","Fedora","Baret"], a:0},
-    {q:"Apa yang dipakai untuk menangkap sapi oleh koboi?", opts:["Lasso / tali","Jaring","Tongkat"], a:0},
-    {q:"Koboi sering dikaitkan dengan era ...", opts:["Wild West","Zaman Batu","Revolusi Industri"], a:0}
+    {q:"Di mana biasanya koboi bekerja?", opts:["Ranch / padang rumput","Kota besar","Gedung perkantoran"], a:0},
+    {q:"Alat khas koboi untuk menangkap ternak?", opts:["Lasso / tali","Jaring","Tongkat"], a:0},
+    {q:"Koboi biasa menunggang ...", opts:["Kuda","Skuter","Sepeda motor"], a:0},
+    {q:"Topi koboi sering disebut ...", opts:["Stetson","Fedora","Baret"], a:0},
+    {q:"Koboi identik dengan era ...", opts:["Wild West","Masa depan","Zaman batu"], a:0}
   ],
-  // Level 2
+  // L2
   [
     {q:"Angka romawi 'V' artinya?", opts:["5","10","50"], a:0},
-    {q:"100 dalam sistem desimal adalah ... dalam persen?", opts:["100%","10%","1%"], a:0},
-    {q:"Apa sinonim kata 'cepat'?", opts:["Lekas","Lambat","Diam"], a:0},
-    {q:"Planet merah adalah ...", opts:["Mars","Venus","Jupiter"], a:0},
-    {q:"Benda langit yang mengelilingi bumi?", opts:["Bulan","Matahari","Mars"], a:0}
+    {q:"Planet merah dikenal sebagai ...", opts:["Mars","Venus","Mercury"], a:0},
+    {q:"Benda langit yang mengelilingi Bumi adalah ...", opts:["Bulan","Matahari","Mars"], a:0},
+    {q:"Sinonim kata 'cepat' adalah ...", opts:["Lekas","Lambat","Diam"], a:0},
+    {q:"100 dalam persen adalah ...", opts:["100%","10%","1%"], a:0}
   ],
-  // Level 3
+  // L3
   [
     {q:"Ibu kota Indonesia?", opts:["Jakarta","Bandung","Surabaya"], a:0},
-    {q:"Lambang negara Indonesia?", opts:["Garuda","Singha","Elang"], a:0},
-    {q:"Bahasa resmi negara kita?", opts:["Bahasa Indonesia","Bahasa Inggris","Bahasa Jawa"], a:0},
-    {q:"Hari kemerdekaan RI diperingati pada tanggal?", opts:["17 Agustus","1 Januari","10 Oktober"], a:0},
-    {q:"Pulau terbesar di Indonesia?", opts:["Papua","Bali","Lombok"], a:0}
+    {q:"Hari kemerdekaan RI diperingati pada ...", opts:["17 Agustus","1 Januari","10 Oktober"], a:0},
+    {q:"Bahasa resmi Indonesia adalah ...", opts:["Bahasa Indonesia","Bahasa Inggris","Bahasa Jawa"], a:0},
+    {q:"Lambang negara Indonesia adalah ...", opts:["Garuda","Singa","Elang"], a:0},
+    {q:"Pulau terbesar di Indonesia adalah ...", opts:["Papua","Bali","Lombok"], a:0}
   ],
-  // Level 4
+  // L4
   [
     {q:"2 x 8 = ?", opts:["16","14","12"], a:0},
     {q:"Akar kuadrat dari 81 adalah ...", opts:["9","8","7"], a:0},
@@ -196,74 +249,71 @@ const BANK = [
     {q:"3 + 7 = ?", opts:["10","11","9"], a:0},
     {q:"7 x 6 = ?", opts:["42","36","48"], a:0}
   ],
-  // Level 5
+  // L5
   [
-    {q:"Binatang dengan belalai?", opts:["Gajah","Kuda","Kelinci"], a:0},
-    {q:"Burung yang tidak bisa terbang?", opts:["Burung unta","Elang","Rajawali"], a:0},
+    {q:"Hewan dengan belalai adalah ...", opts:["Gajah","Kuda","Sapi"], a:0},
+    {q:"Burung yang tidak bisa terbang ...", opts:["Burung unta","Elang","Rajawali"], a:0},
     {q:"Hewan menyusui disebut ...", opts:["Mamalia","Reptil","Amfibi"], a:0},
-    {q:"Hewan yang bertelur?", opts:["Ayam","Sapi","Kambing"], a:0},
-    {q:"Hewan karnivora biasanya makan ...", opts:["Daging","Rumput","Bijian"], a:0}
+    {q:"Hewan yang bertelur adalah ...", opts:["Ayam","Sapi","Kambing"], a:0},
+    {q:"Hewan karnivora biasa memakan ...", opts:["Daging","Rumput","Bijian"], a:0}
   ],
-  // Level 6
+  // L6
   [
-    {q:"Ibu kota Jepang?", opts:["Tokyo","Seoul","Bangkok"], a:0},
-    {q:"Mata uang Jepang?", opts:["Yen","Won","Rupiah"], a:0},
-    {q:"Negara dengan Menara Eiffel?", opts:["Prancis","Italia","Jerman"], a:0},
-    {q:"Ibukota Inggris?", opts:["London","Paris","Madrid"], a:0},
-    {q:"Benua terbesar di dunia?", opts:["Asia","Afrika","Eropa"], a:0}
+    {q:"Ibu kota Jepang adalah ...", opts:["Tokyo","Seoul","Beijing"], a:0},
+    {q:"Mata uang Jepang disebut ...", opts:["Yen","Won","Rupiah"], a:0},
+    {q:"Negara tempat Menara Eiffel ...", opts:["Prancis","Italia","Jerman"], a:0},
+    {q:"Ibukota Inggris adalah ...", opts:["London","Paris","Madrid"], a:0},
+    {q:"Benua terbesar adalah ...", opts:["Asia","Afrika","Eropa"], a:0}
   ],
-  // Level 7
+  // L7
   [
-    {q:"Warna gabungan merah + putih biasanya menghasilkan ... (cat subjektif)", opts:["Cantik/cerah","Hitam","Biru"], a:0},
-    {q:"Jika hujan, sebaiknya membawa ...", opts:["Payung","Topi pantai","Kacamata renang"], a:0},
-    {q:"Alat untuk menulis di kertas?", opts:["Pulpen / pensil","Keyboard","Headset"], a:0},
+    {q:"Jika hujan, bawa ...", opts:["Payung","Kacamata renang","Topi pantai"], a:0},
+    {q:"Alat tulis yang umum adalah ...", opts:["Pulpen / pensil","Keyboard","Headset"], a:0},
+    {q:"Minuman pagi umumnya ...", opts:["Kopi","Soda","Es krim"], a:0},
     {q:"Pagi hari biasanya ...", opts:["Matahari terbit","Matahari terbenam","Gelap total"], a:0},
-    {q:"Minuman hangat yang umum di pagi hari?", opts:["Kopi","Es krim","Soda"], a:0}
+    {q:"Warna campuran merah + putih terasa ...", opts:["Cerah / hangat","Dingin","Netral"], a:0}
   ],
-  // Level 8
+  // L8
   [
     {q:"Simbol kimia H adalah ...", opts:["Hidrogen","Helium","Hafnium"], a:0},
-    {q:"Air mendidih pada suhu kira-kira ...", opts:["100°C","0°C","50°C"], a:0},
-    {q:"Gas yang kita hirup untuk bernapas?", opts:["Oksigen","Karbon dioksida","Nitrogen murni"], a:0},
-    {q:"Benda padat berubah jadi cair disebut ...", opts:["Mencair/Meleleh","Membeku","Menguap"], a:0},
-    {q:"Suhu beku air dalam Celcius?", opts:["0°C","-10°C","100°C"], a:0}
+    {q:"Air mendidih kira-kira pada ...", opts:["100°C","0°C","50°C"], a:0},
+    {q:"Gas yang kita hirup terutama adalah ...", opts:["Oksigen","Karbon dioksida","Nitrogen murni"], a:0},
+    {q:"Perubahan padat ke cair disebut ...", opts:["Mencair","Membeku","Menguap"], a:0},
+    {q:"Suhu beku air adalah ...", opts:["0°C","100°C","-10°C"], a:0}
   ],
-  // Level 9
+  // L9
   [
-    {q:"Presiden pertama RI?", opts:["Soekarno","Soeharto","Habibie"], a:0},
-    {q:"Pancasila terdiri dari berapa sila?", opts:["5","4","6"], a:0},
-    {q:"Bendera Merah Putih mempunyai berapa warna utama?", opts:["2","3","1"], a:0},
+    {q:"Presiden pertama RI adalah ...", opts:["Soekarno","Soeharto","Habibie"], a:0},
+    {q:"Pancasila memiliki berapa sila?", opts:["5","4","6"], a:0},
     {q:"Lagu kebangsaan Indonesia berjudul ...", opts:["Indonesia Raya","Tanah Airku","Bagimu Negeri"], a:0},
-    {q:"Hari Pahlawan diperingati pada tanggal ...", opts:["10 November","17 Agustus","1 Desember"], a:0}
+    {q:"Hari Pahlawan adalah ...", opts:["10 November","17 Agustus","1 Desember"], a:0},
+    {q:"Warna bendera Indonesia adalah ...", opts:["Merah & Putih","Biru & Putih","Hijau & Putih"], a:0}
   ],
-  // Level 10 (final)
+  // L10
   [
     {q:"Planet terbesar di tata surya?", opts:["Jupiter","Bumi","Mars"], a:0},
-    {q:"Satelit alami Bumi adalah ...", opts:["Bulan","Mars","Venus"], a:0},
-    {q:"Bintang paling dekat dengan Bumi adalah ...", opts:["Matahari","Sirius","Vega"], a:0},
-    {q:"Jika berkendara, penting untuk ...", opts:["Memakai sabuk pengaman","Mencopot kaca belakang","Mempercepat tanpa tujuan"], a:0},
-    {q:"Untuk kesehatan, dianjurkan makan ...", opts:["Seimbang (sayur, protein, biji)","Hanya gorengan","Hanya manisan"], a:0}
+    {q:"Satelit alami Bumi adalah ...", opts:["Bulan","Venus","Mars"], a:0},
+    {q:"Bintang terdekat ke Bumi adalah ...", opts:["Matahari","Sirius","Vega"], a:0},
+    {q:"Untuk keselamatan berkendara, pakai ...", opts:["Sabuk pengaman","Lampu flash","Topi"], a:0},
+    {q:"Makanan sehat sebaiknya ...", opts:["Seimbang (sayur & protein)","Hanya gorengan","Hanya manisan"], a:0}
   ]
 ];
 
-/* ------------- Game state ------------- */
+/* ---------- Game settings ---------- */
 const LEVELS = 10;
-const Q_PER_LEVEL = 5; // sesuai data
-let curLevel = 1;
-let curIndex = 0;
-let score = 0;
-let orderForLevel = {}; // menyimpan urutan soal per level saat diacak
-let answersOrder = {};  // menyimpan urutan opsi per soal untuk dibalik/acak
+const Q_PER_LEVEL = 5;
+const TOTAL = LEVELS * Q_PER_LEVEL;
 
-/* ---------- UI refs ---------- */
+/* ---------- State ---------- */
+let curLevel = 1;
+let curQidx = 0;
+let score = 0;
+let orderPerLevel = {};   // order of questions per level
+let optsOrder = {};       // options order per [level][qIndex]
 const el = id => document.getElementById(id);
-const qtext = el('qtext'), optsWrap = el('options');
-const uiLevel = el('ui-level'), uiSub = el('ui-sub'), uiScore = el('ui-score'), uiProgress = el('ui-progress');
-const btnStart = el('btn-start'), btnReset = el('btn-reset'), btnNext = el('btn-next'), btnInfo = el('btn-info');
 
 /* ---------- Helpers ---------- */
-function shuffleArr(a){
-  // Fisher–Yates
+function shuffle(a){
   const arr = a.slice();
   for(let i=arr.length-1;i>0;i--){
     const j = Math.floor(Math.random()*(i+1));
@@ -272,33 +322,41 @@ function shuffleArr(a){
   return arr;
 }
 
-/* create random orders for a level (questions & options) */
-function prepareLevel(level){
-  const idxs = Array.from({length:Q_PER_LEVEL},(_,i)=>i);
-  orderForLevel[level] = shuffleArr(idxs);
-  answersOrder[level] = {};
-  // for each question (as in original array order), prepare permutation of options
-  for(let qi=0;qi<Q_PER_LEVEL;qi++){
-    answersOrder[level][qi] = shuffleArr([0,1,2]);
+/* prepare random order for a level */
+function prepareLevel(lv){
+  const baseIdx = Array.from({length:Q_PER_LEVEL},(_,i)=>i);
+  orderPerLevel[lv] = shuffle(baseIdx);
+  optsOrder[lv] = {};
+  // options permutation per question (map to original index)
+  for(let i=0;i<Q_PER_LEVEL;i++){
+    optsOrder[lv][i] = shuffle(Array.from({length:BANK[lv-1][i].opts.length},(_,k)=>k));
   }
 }
 
-/* show current question */
+/* update UI stats */
+function updateStats(){
+  el('ui-level').textContent = curLevel;
+  el('ui-qnum').textContent = `${curQidx+1}/${Q_PER_LEVEL}`;
+  el('ui-score').textContent = score;
+  const overall = Math.round(((curLevel-1)*Q_PER_LEVEL + curQidx) / TOTAL * 100);
+  el('ui-progress').style.width = overall + '%';
+}
+
+/* show question */
 function showQuestion(){
-  const lvlIdx = curLevel-1;
-  uiLevel.textContent = curLevel;
-  uiScore.textContent = score;
-  uiSub.textContent = `Pertanyaan ${curIndex+1} / ${Q_PER_LEVEL}`;
-
-  const qIdx = orderForLevel[curLevel][curIndex];
-  const qObj = BANK[lvlIdx][qIdx];
-
-  qtext.textContent = qObj.q;
+  if(curLevel > LEVELS){
+    finishGame();
+    return;
+  }
+  updateStats();
+  const qIndex = orderPerLevel[curLevel][curQidx];
+  const qObj = BANK[curLevel-1][qIndex];
+  el('qtext').textContent = qObj.q;
+  const optsWrap = el('options');
   optsWrap.innerHTML = '';
+  const perm = optsOrder[curLevel][qIndex];
 
-  // create buttons with randomized option order
-  const perm = answersOrder[curLevel][qIdx]; // mapping to original opts indices
-  perm.forEach((origIdx)=>{
+  perm.forEach(origIdx => {
     const btn = document.createElement('button');
     btn.className = 'opt';
     btn.textContent = qObj.opts[origIdx];
@@ -306,127 +364,115 @@ function showQuestion(){
     optsWrap.appendChild(btn);
   });
 
-  // progress bar percent across whole game (optional) or within level
-  const percent = Math.round(((curLevel-1) * Q_PER_LEVEL + curIndex) / (LEVELS * Q_PER_LEVEL) * 100);
-  uiProgress.style.width = percent + '%';
-
-  // UI toggles
-  btnStart.style.display = 'none';
-  btnNext.style.display = 'none';
+  // ensure start button hidden once started
+  el('btn-start').style.display = 'none';
 }
 
 /* handle answer click */
-function handleAnswer(selectedOrigIndex, correctIndex, btn){
-  // disable all buttons to prevent double click
-  Array.from(optsWrap.children).forEach(b => b.disabled = true);
+function handleAnswer(selectedOrigIdx, correctIdx, btn){
+  // disable all
+  Array.from(el('options').children).forEach(b=> b.disabled = true);
 
-  if(selectedOrigIndex === correctIndex){
-    // correct
+  if(selectedOrigIdx === correctIdx){
     btn.classList.add('correct');
     score++;
-    uiScore.textContent = score;
   } else {
-    // wrong: highlight wrong & correct
     btn.classList.add('wrong');
-    // find correct button to color
-    Array.from(optsWrap.children).forEach(b=>{
-      if(b.textContent === BANK[curLevel-1][ orderForLevel[curLevel][curIndex] ].opts[correctIndex]){
-        b.classList.add('correct');
-      }
+    // highlight correct
+    const qIndex = orderPerLevel[curLevel][curQidx];
+    const rightText = BANK[curLevel-1][qIndex].opts[correctIdx];
+    Array.from(el('options').children).forEach(b=>{
+      if(b.textContent === rightText) b.classList.add('correct');
     });
   }
-
-  // after short delay go next question
-  setTimeout(()=>{
-    curIndex++;
-    if(curIndex >= Q_PER_LEVEL){
-      if(curLevel >= LEVELS){
-        finishGame();
-      } else {
-        // next level
-        curLevel++;
-        curIndex = 0;
-        if(!orderForLevel[curLevel]) prepareLevel(curLevel); // ensure prepared
-        showQuestion();
-      }
-    } else {
-      showQuestion();
+  updateStats();
+  // next after short delay
+  setTimeout(()=> {
+    curQidx++;
+    if(curQidx >= Q_PER_LEVEL){
+      curLevel++;
+      curQidx = 0;
+      if(curLevel <= LEVELS && !orderPerLevel[curLevel]) prepareLevel(curLevel);
     }
-  }, 800);
-}
-
-/* start or resume game */
-function startGame(){
-  // prepare all levels if not yet
-  for(let lv=1; lv<=LEVELS; lv++){
-    if(!orderForLevel[lv]) prepareLevel(lv);
-  }
-  // reset state and show first Q
-  curLevel = 1; curIndex = 0; score = 0;
-  uiScore.textContent = score;
-  showQuestion();
-}
-
-/* reset current level (acak ulang soal & opsi) */
-function resetLevel(){
-  prepareLevel(curLevel);
-  curIndex = 0;
-  showQuestion();
+    if(curLevel > LEVELS) finishGame();
+    else showQuestion();
+  }, 700);
 }
 
 /* finish */
 function finishGame(){
-  qtext.textContent = `🎉 Selamat Koboi! Kamu menyelesaikan semua level.`;
-  optsWrap.innerHTML = `<div style="text-align:center;padding:6px 0">
-    <div style="font-weight:800;font-size:20px">${score} / ${LEVELS * Q_PER_LEVEL}</div>
-    <div style="margin-top:8px;color:#54646d">Skor akhir</div>
-    <div style="margin-top:12px"><button class="btn" onclick="startGame()">Main Lagi</button>
-    <button class="ghost" style="margin-left:8px" onclick="window.scrollTo({top:0,behavior:'smooth'})">Naik ke Atas</button>
-    </div>
-  </div>`;
-  uiSub.textContent = 'Selesai';
-  uiProgress.style.width = '100%';
-  btnStart.style.display = 'inline-block';
-  btnNext.style.display = 'none';
+  el('overlay').style.display = 'flex';
+  el('final-score').textContent = `${score} / ${TOTAL}`;
 }
 
-/* small info modal (simple) */
-btnInfo.addEventListener('click',()=> {
-  alert('Koboi — Game Tebak-Tebakan\n10 level, tiap level 5 soal.\nJawaban diacak tiap reset level.\nSelamat bermain!');
-});
+/* reset current level (shuffle only current level) */
+function resetLevel(){
+  prepareLevel(curLevel);
+  curQidx = 0;
+  showQuestion();
+}
 
-/* buttons */
-btnStart.addEventListener('click', ()=> {
-  startGame();
-});
-btnReset.addEventListener('click', ()=> {
-  // reset entire game: regenerate all levels orders
-  orderForLevel = {}; answersOrder = {}; score = 0; curLevel = 1; curIndex = 0;
-  startGame();
-});
-btnNext.addEventListener('click', ()=> {
-  // skip current question (treat as wrong, advance)
-  curIndex++;
-  if(curIndex >= Q_PER_LEVEL){
-    if(curLevel >= LEVELS) finishGame();
-    else { curLevel++; curIndex=0; showQuestion(); }
-  } else showQuestion();
-});
+/* restart full game */
+function resetAll(){
+  // re-create orders for all levels
+  orderPerLevel = {};
+  optsOrder = {};
+  for(let lv=1; lv<=LEVELS; lv++) prepareLevel(lv);
+  curLevel = 1; curQidx = 0; score = 0;
+  el('overlay').style.display = 'none';
+  el('btn-start').style.display = 'inline-block';
+  showQuestion();
+}
 
-/* prepare first level orders so UI doesn't break if user hits start quickly */
+/* skip (treat as wrong) */
+function skipQ(){
+  // simply advance
+  curQidx++;
+  if(curQidx >= Q_PER_LEVEL){
+    curLevel++;
+    curQidx = 0;
+    if(curLevel <= LEVELS && !orderPerLevel[curLevel]) prepareLevel(curLevel);
+  }
+  if(curLevel > LEVELS) finishGame();
+  else showQuestion();
+}
+
+/* init minimal orders (prepare first level) */
 prepareLevel(1);
 
-/* optional: keyboard support (A/B/C keys) - good for desktop */
+/* UI bindings */
+el('btn-start').addEventListener('click', ()=> {
+  // make sure all levels prepared lazily
+  for(let i=1;i<=LEVELS;i++) if(!orderPerLevel[i]) prepareLevel(i);
+  curLevel = 1; curQidx = 0; score = 0;
+  showQuestion();
+});
+el('btn-reset').addEventListener('click', ()=> {
+  // full reset and reshuffle everything
+  resetAll();
+});
+el('btn-skip').addEventListener('click', ()=> skipQ());
+el('btn-info').addEventListener('click', ()=> {
+  alert('Koboi — Game Tebak-Tebakan\n10 level, tiap level 5 soal.\nJawaban beserta urutan opsi akan diacak tiap reset level.\nDirancang untuk mobile full-screen. Selamat bermain!');
+});
+el('over-replay').addEventListener('click', ()=> resetAll());
+el('over-close').addEventListener('click', ()=> el('overlay').style.display = 'none');
+
+/* keyboard small support */
 document.addEventListener('keydown', (e)=>{
-  if(optsWrap.children.length && ['1','2','3'].includes(e.key)){
-    const idx = parseInt(e.key,10)-1;
-    const btn = optsWrap.children[idx];
-    if(btn) btn.click();
+  if(el('options').children.length){
+    const k = e.key;
+    if(['1','2','3','4'].includes(k)){
+      const idx = parseInt(k,10)-1;
+      const btn = el('options').children[idx];
+      if(btn) btn.click();
+    }
   }
 });
 
-/* initial tiny tip */
-qtext.textContent = 'Tekan "Mulai" untuk memulai petualangan Koboi. Jawaban akan diacak tiap reset level.';
+/* initial hint text */
+el('qtext').textContent = 'Tekan "Mulai" untuk memulai petualangan Koboi.';
+
 </script>
 </body>
 </html>
